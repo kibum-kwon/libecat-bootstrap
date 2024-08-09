@@ -26,3 +26,4 @@ In homing_at_start, if there is no need to automatically move to the home positi
 ./ecctl -> connect IP PORT -> send -> axis tmo params
 By entering the command ./ecctl -> connect 192.168.50.177 9999 -> send -> axis tmo params, you can adjust the parameters of the desired wheel.
 
+ㅁㄴㅇㄴㅁㅇ
