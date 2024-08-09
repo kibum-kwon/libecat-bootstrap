@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 
+import asyncio  # ì¶”ê°€
 import sys
 import os
 from PyQt5.QtWidgets import QApplication, QWidget, QGridLayout, QVBoxLayout, QLabel, QPushButton, QDial, QLineEdit, QGraphicsView, QGraphicsScene, QFrame
@@ -103,8 +104,8 @@ class SkeletonPanel(QWidget):
         start_button.clicked.connect(self.start_robot)
         stop_button.clicked.connect(self.stop_robot)
 
-        right_layout.addWidget(start_button, 0, 0, 1, 1)  # Start ¹öÆ° Ãß°¡
-        right_layout.addWidget(stop_button, 0, 1, 1, 1)  # Stop ¹öÆ° Ãß°¡
+        right_layout.addWidget(start_button, 0, 0, 1, 1)  # Start ï¿½ï¿½Æ° ï¿½ß°ï¿½
+        right_layout.addWidget(stop_button, 0, 1, 1, 1)  # Stop ï¿½ï¿½Æ° ï¿½ß°ï¿½
 
         # Speed control buttons and input field
         button_layout = QGridLayout()

@@ -1,10 +1,12 @@
 # -*- coding: utf-8 -*-
 
+import asyncio
 import sys
 import os
 from PyQt5.QtWidgets import QApplication, QWidget, QGridLayout, QVBoxLayout, QLabel, QPushButton, QDial, QLineEdit, QGraphicsView, QGraphicsScene, QFrame
 from PyQt5.QtCore import Qt, QSize
 from PyQt5.QtGui import QIcon, QPixmap
+
 
 class SkeletonPanel(QWidget):
     def __init__(self):
@@ -103,8 +105,8 @@ class SkeletonPanel(QWidget):
         start_button.clicked.connect(self.start_robot)
         stop_button.clicked.connect(self.stop_robot)
 
-        right_layout.addWidget(start_button, 0, 0, 1, 1)  # Start ��ư �߰�
-        right_layout.addWidget(stop_button, 0, 1, 1, 1)  # Stop ��ư �߰�
+        right_layout.addWidget(start_button, 0, 0, 1, 1)  # Start ��ư �߰�
+        right_layout.addWidget(stop_button, 0, 1, 1, 1)  # Stop ��ư �߰�
 
         # Speed control buttons and input field
         button_layout = QGridLayout()
@@ -240,7 +242,31 @@ class SkeletonPanel(QWidget):
         self.scene.clear()
         self.scene.addPixmap(self.bg_image)
         super().resizeEvent(event)
+        
 
+
+
+async def send_command(command):
+    # Raspberry Pi 서버와의 연결
+    reader, writer = await asyncio.open_connection('192.168.50.177', 9999)
+
+    print(f'Sending command: {command!r}')
+    writer.write(command.encode())
+
+    # 데이터 전송 완료 대기
+    await writer.drain()
+    print("Command sent. Waiting for response...")
+
+    # 서버로부터 응답 수신
+    data = await reader.read(100)
+    print(f'Received: {data.decode()}')
+
+    # 연결 종료
+    writer.close()
+    await writer.wait_closed()
+
+        
+        
 if __name__ == '__main__':
     app = QApplication(sys.argv)
     ex = SkeletonPanel()
