@@ -6,7 +6,8 @@ import os
 from PyQt5.QtWidgets import QApplication, QWidget, QGridLayout, QVBoxLayout, QLabel, QPushButton, QDial, QLineEdit, QGraphicsView, QGraphicsScene, QFrame
 from PyQt5.QtCore import Qt, QSize
 from PyQt5.QtGui import QIcon, QPixmap
-
+import tkinter as tk
+from tkinter import ttk
 
 class SkeletonPanel(QWidget):
     def __init__(self):
@@ -246,26 +247,57 @@ class SkeletonPanel(QWidget):
 
 
 
-async def send_command(command):
-    # Raspberry Pi 서버와의 연결
-    reader, writer = await asyncio.open_connection('192.168.50.177', 9999)
+class RobotClient:
+    def __init__(self, host, port):
+        self.host = host
+        self.port = port
+        self.reader = None
+        self.writer = None
 
-    print(f'Sending command: {command!r}')
-    writer.write(command.encode())
+    async def connect(self):
+        self.reader, self.writer = await asyncio.open_connection(self.host, self.port)
 
-    # 데이터 전송 완료 대기
-    await writer.drain()
-    print("Command sent. Waiting for response...")
+    async def send_data(self, data):
+        self.writer.write(data.encode())
+        await self.writer.drain()
 
-    # 서버로부터 응답 수신
-    data = await reader.read(100)
-    print(f'Received: {data.decode()}')
+    async def receive_data(self):
+        data = await self.reader.read(100)
+        print(f'Received: {data.decode()}')
 
-    # 연결 종료
-    writer.close()
-    await writer.wait_closed()
+class RobotControlApp:
+    def __init__(self, master):
+        self.master = master
+        self.master.title("Robot Control")
 
-        
+        self.dial_frame = ttk.Frame(self.master)
+        self.dial_frame.pack()
+
+        self.slave_dials = []
+        for i in range(num_slaves):  # num_slaves는 슬레이브의 수
+            dial = ttk.Scale(self.dial_frame, from_=-90, to=90, orient='horizontal', command=lambda value, idx=i: self.update_slave_angle(value, idx))
+            dial.pack()
+            self.slave_dials.append(dial)
+
+    def update_slave_angle(self, value, index):
+        # 슬레이브의 각도를 업데이트하는 로직
+        angle = float(value)
+        asyncio.run(self.send_angle_to_slave(index, angle))
+
+    async def send_angle_to_slave(self, index, angle):
+        # 슬레이브에 각도를 전송하는 비동기 함수
+        data = f'set_angle:{index}:{angle}'
+        await self.client.send_data(data)        
+
+def main():
+    root = tk.Tk()
+    app = RobotControlApp(root)
+    
+    # 비동기 소켓 연결
+    asyncio.run(app.client.connect())
+
+    root.mainloop()
+
         
 if __name__ == '__main__':
     app = QApplication(sys.argv)
