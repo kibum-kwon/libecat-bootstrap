@@ -1,13 +1,11 @@
 # -*- coding: utf-8 -*-
 
-import asyncio
+import socket
 import sys
 import os
 from PyQt5.QtWidgets import QApplication, QWidget, QGridLayout, QVBoxLayout, QLabel, QPushButton, QDial, QLineEdit, QGraphicsView, QGraphicsScene, QFrame
 from PyQt5.QtCore import Qt, QSize
 from PyQt5.QtGui import QIcon, QPixmap
-import tkinter as tk
-from tkinter import ttk
 
 class SkeletonPanel(QWidget):
     def __init__(self):
@@ -244,61 +242,40 @@ class SkeletonPanel(QWidget):
         self.scene.addPixmap(self.bg_image)
         super().resizeEvent(event)
         
+class RobotControlGUI(QWidget):
+    def __init__(self):
+        super().__init__()
+        self.initUI()
 
+    def initUI(self):
+        layout = QVBoxLayout()
 
+        start_button = QPushButton('Start Robot', self)
+        start_button.clicked.connect(lambda: self.send_command("start"))
+        layout.addWidget(start_button)
 
-class RobotClient:
-    def __init__(self, host, port):
-        self.host = host
-        self.port = port
-        self.reader = None
-        self.writer = None
+        stop_button = QPushButton('Stop Robot', self)
+        stop_button.clicked.connect(lambda: self.send_command("stop"))
+        layout.addWidget(stop_button)
 
-    async def connect(self):
-        self.reader, self.writer = await asyncio.open_connection(self.host, self.port)
+        self.setLayout(layout)
+        self.setWindowTitle('Robot Control')
+        self.show()
 
-    async def send_data(self, data):
-        self.writer.write(data.encode())
-        await self.writer.drain()
+    def send_command(self, command):
+        HOST = '192.168.50.177'  # server.c가 실행 중인 호스트
+        PORT = 9999         # server.c의 포트
 
-    async def receive_data(self):
-        data = await self.reader.read(100)
-        print(f'Received: {data.decode()}')
+        with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
+            s.connect((HOST, PORT))
+            s.sendall(command.encode('utf-8'))
+            print(f'Sent: {command}')
 
-class RobotControlApp:
-    def __init__(self, master):
-        self.master = master
-        self.master.title("Robot Control")
+if __name__ == '__main__':
+    app = QApplication(sys.argv)
+    ex = RobotControlGUI()
+    sys.exit(app.exec_())
 
-        self.dial_frame = ttk.Frame(self.master)
-        self.dial_frame.pack()
-
-        self.slave_dials = []
-        for i in range(num_slaves):  # num_slaves는 슬레이브의 수
-            dial = ttk.Scale(self.dial_frame, from_=-90, to=90, orient='horizontal', command=lambda value, idx=i: self.update_slave_angle(value, idx))
-            dial.pack()
-            self.slave_dials.append(dial)
-
-    def update_slave_angle(self, value, index):
-        # 슬레이브의 각도를 업데이트하는 로직
-        angle = float(value)
-        asyncio.run(self.send_angle_to_slave(index, angle))
-
-    async def send_angle_to_slave(self, index, angle):
-        # 슬레이브에 각도를 전송하는 비동기 함수
-        data = f'set_angle:{index}:{angle}'
-        await self.client.send_data(data)        
-
-def main():
-    root = tk.Tk()
-    app = RobotControlApp(root)
-    
-    # 비동기 소켓 연결
-    asyncio.run(app.client.connect())
-
-    root.mainloop()
-
-        
 if __name__ == '__main__':
     app = QApplication(sys.argv)
     ex = SkeletonPanel()
