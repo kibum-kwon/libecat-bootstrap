@@ -5,7 +5,7 @@
 #include <unistd.h>
 #include <arpa/inet.h>
 
-#define PORT 8080
+#define PORT 9999
 #define BUFFER_SIZE 1024
 
 int main() {
@@ -23,7 +23,7 @@ int main() {
     serv_addr.sin_port = htons(PORT);
 
     // 서버 주소 설정
-    if (inet_pton(AF_INET, "127.0.0.1", &serv_addr.sin_addr) <= 0) {
+    if (inet_pton(AF_INET, "192.168.50.177", &serv_addr.sin_addr) <= 0) {
         printf("\nInvalid address/ Address not supported \n");
         return -1;
     }
