@@ -241,6 +241,48 @@ class SkeletonPanel(QWidget):
         self.scene.clear()
         self.scene.addPixmap(self.bg_image)
         super().resizeEvent(event)
+        
+    def initUI(self):
+        # 레이아웃 설정
+        layout = QVBoxLayout()
+
+        # IP 입력 라벨 및 텍스트 박스
+        self.ip_label = QLabel('IP Address:')
+        self.ip_input = QLineEdit(self)
+        layout.addWidget(self.ip_label)
+        layout.addWidget(self.ip_input)
+
+        # PORT 입력 라벨 및 텍스트 박스
+        self.port_label = QLabel('Port:')
+        self.port_input = QLineEdit(self)
+        layout.addWidget(self.port_label)
+        layout.addWidget(self.port_input)
+
+        # 제출 버튼
+        self.submit_button = QPushButton('Submit', self)
+        self.submit_button.clicked.connect(self.on_submit)
+        layout.addWidget(self.submit_button)
+
+        # 기본 레이아웃 설정
+        self.setLayout(layout)
+        self.setWindowTitle('IP and Port Input')
+        self.setGeometry(300, 300, 300, 150)
+
+    def on_submit(self):
+        ip = self.ip_input.text()
+        port = self.port_input.text()
+        
+        # 간단한 입력 확인
+        if not ip or not port:
+            QMessageBox.warning(self, 'Input Error', 'Please enter both IP and Port.')
+            return
+        
+        try:
+            port = int(port)  # 포트를 정수로 변환
+            # 여기서 IP와 PORT를 사용하여 필요한 작업을 수행할 수 있습니다.
+            QMessageBox.information(self, 'Success', f'IP: {ip}\nPort: {port}')
+        except ValueError:
+            QMessageBox.warning(self, 'Input Error', 'Port must be a number.')
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)
