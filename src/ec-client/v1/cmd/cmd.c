@@ -1,6 +1,25 @@
 #include "ec-client/v1/cmd.h"
 
+void handle_input() {
+    int sockfd = socket(AF_INET, SOCK_STREAM, 0);
+    struct sockaddr_in servaddr;
 
+    servaddr.sin_family = AF_INET;
+    servaddr.sin_addr.s_addr = INADDR_ANY;
+    servaddr.sin_port = htons(PORT);
+
+    bind(sockfd, (struct sockaddr*)&servaddr, sizeof(servaddr));
+    listen(sockfd, 5);
+
+    int new_sock = accept(sockfd, NULL, NULL);
+    
+    char buffer[1024] = {0};
+    recv(new_sock, buffer, sizeof(buffer), 0);
+    printf("Received from GUI: %s\n", buffer);
+    
+    close(new_sock);
+    close(sockfd);
+}
 
 int RunInteractive(){
 
@@ -240,7 +259,7 @@ int SendTo(char* res, int arg_len, char** runtime_args){
 
         memset(&ar, 0, sizeof(AxisReq));
 
-        fgets(new_buff, 1024, stdin);
+        fgets(new_buff, 1024, stdin); // 입력
 
         printf("fgets: %s\n", new_buff);
 
