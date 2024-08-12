@@ -165,8 +165,6 @@ class SkeletonPanel(QWidget):
         dial.setWrapping(True)  # Enable 360-degree rotation
         dial.setMinimum(0)
         dial.setMaximum(8)  # Divide the dial into 8 steps, each representing 45 degrees
-        
-        layout.addWidget(dial)
 
         # Connect the dial's value change to update the angle display
         dial.valueChanged.connect(lambda value, idx=wheel_index: self.update_wheel_angle(idx, value * 45))
@@ -225,22 +223,6 @@ class SkeletonPanel(QWidget):
             input_field.clear()
         except ValueError:
             input_field.setText("Error")
-            
-    def update_wheel_angle(self, wheel_index, angle):
-        # Display the angle on the label
-        self.wheel_value_labels[wheel_index].setText(str(angle))
-
-        # Send the command to client.c
-        self.send_command(f"wheel {wheel_index + 1} {angle}")
-
-    def send_command(self, command):
-        HOST = '192.168.50.177'  # server.c가 실행 중인 호스트
-        PORT = 9999         # server.c의 포트
-
-        with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
-            s.connect((HOST, PORT))
-            s.sendall(command.encode('utf-8'))
-            print(f'Sent: {command}')
 
     # Start the robot with speed 1500000 and reset wheel angles to 0
     def start_robot(self):
@@ -259,40 +241,6 @@ class SkeletonPanel(QWidget):
         self.scene.clear()
         self.scene.addPixmap(self.bg_image)
         super().resizeEvent(event)
-        
-class RobotControlGUI(QWidget):
-    def __init__(self):
-        super().__init__()
-        self.initUI()
-
-    def initUI(self):
-        layout = QVBoxLayout()
-
-        start_button = QPushButton('Start Robot', self)
-        start_button.clicked.connect(lambda: self.send_command("start"))
-        layout.addWidget(start_button)
-
-        stop_button = QPushButton('Stop Robot', self)
-        stop_button.clicked.connect(lambda: self.send_command("stop"))
-        layout.addWidget(stop_button)
-
-        self.setLayout(layout)
-        self.setWindowTitle('Robot Control')
-        self.show()
-
-    def send_command(self, command):
-        HOST = '192.168.50.177'  # server.c가 실행 중인 호스트
-        PORT = 9999         # server.c의 포트
-
-        with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
-            s.connect((HOST, PORT))
-            s.sendall(command.encode('utf-8'))
-            print(f'Sent: {command}')
-
-if __name__ == '__main__':
-    app = QApplication(sys.argv)
-    ex = RobotControlGUI()
-    sys.exit(app.exec_())
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)

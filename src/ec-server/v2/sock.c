@@ -356,28 +356,28 @@ int GetHomingStatusByAxis(char* res, int axis){
 
 
 
-int PostPositionWithStatusFeedbackByAxis(char* res, int axis, int pos){
-
+int PostPositionWithStatusFeedbackByAxis(char* res, int axis, int pos) {
     int32_t pos_32 = (int32_t)pos;
-
     motor_rxpdos[axis]->target_position = pos_32;
 
     int status_int = (int)motor_txpdos[axis]->mode_of_operation_display;
-
     int feedback_int = (int)motor_txpdos[axis]->position_actual_value;
 
     char status_str[MAX_STATUS_STRLEN] = {0};
     char feedback_str[MAX_POSITION_STRLEN] = {0};
 
     sprintf(status_str, "%d", status_int);
-
     sprintf(feedback_str, "%d", feedback_int);
 
+    // 각도 정보를 추가
+    char angle_str[10];
+    sprintf(angle_str, "%d", feedback_int); // 여기에 각도 계산 로직 추가 가능
+
     strcat(res, status_str);
-
     strcat(res, " ");
-
     strcat(res, feedback_str);
+    strcat(res, " ");
+    strcat(res, angle_str); // 각도 추가
 
     return 0;
 }
