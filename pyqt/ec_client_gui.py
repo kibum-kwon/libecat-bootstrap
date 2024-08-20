@@ -278,8 +278,8 @@ class SkeletonPanel(QWidget):
         dial = QDial(self)
         dial.setNotchesVisible(True)
         dial.setWrapping(False)  # Disable 360-degree rotation
-        dial.setMinimum(-4)  # -200000 / 50000 = -4
-        dial.setMaximum(4)   # 200000 / 50000 = 4
+        dial.setMinimum(-10)  # -200000 / 50000 = -4
+        dial.setMaximum(10)   # 200000 / 50000 = 4
         dial.setSingleStep(1)
         dial.setPageStep(1)
 
@@ -314,7 +314,7 @@ class SkeletonPanel(QWidget):
     def set_wheel_angle(self, wheel_index, input_field):
         try:
             value = int(input_field.text())
-            if -200000 <= value <= 200000 and value % 50000 == 0:
+            if -100000 <= value <= 100000 and value % 10000 == 0:
                 self.wheel_labels[wheel_index][1].setText(str(value))
                 input_field.clear()
 
@@ -325,7 +325,7 @@ class SkeletonPanel(QWidget):
                 # Update dial position
                 dial = self.findChild(QDial, f"dial_{wheel_index}")
                 if dial:
-                    dial.setValue(value // 50000)
+                    dial.setValue(value // 10000)
             else:
                 input_field.setText("Invalid")
         except ValueError:
