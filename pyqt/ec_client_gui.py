@@ -227,23 +227,11 @@ class SkeletonPanel(QWidget):
         layout.setColumnStretch(1, 1)
         
         
-#-----------------------------------------------------------후진 버튼 추가
-        self.reverse_button = QPushButton("후진", self)
-        self.reverse_button.setFixedHeight(50)  # 버튼 크기 설정
-        self.reverse_button.clicked.connect(self.reverse_robot)  # 후진 메서드 연결
-        right_layout.addWidget(self.reverse_button, 6, 0, 1, 2)  # 레이아웃에 추가
+
 
         self.show()
         
-#------------------------------------------------------후진 버튼 추가
-    def reverse_robot(self):
-        # 후진 동작을 위한 로직을 구현합니다.
-        self.current_speed = -500000  # 후진 속도 설정 (예: -500000)
-        self.change_all_wheel_speeds(self.current_speed)  # 모든 바퀴 속도 조정
-        self.update_speed_label()  # 속도 레이블 업데이트
-        
-    def update_speed_label(self):
-        self.speed_label.setText(f'Speed: {self.current_speed}')  # 현재 속도를 레이블에 표시
+
 
 
 # /*********************************angle angle angle angle *****************************************************************/ 
@@ -437,7 +425,7 @@ class SkeletonPanel(QWidget):
             input_field.setText("Error")
 
     def start_robot(self):
-        self.current_speed = 0000
+        self.current_speed = 1500000
         self.speed_label.setText(f'Speed: {self.current_speed}')
         hex_speed = f"0x{self.current_speed:X}" 
         for i in range(4):
