@@ -91,13 +91,31 @@ int ListenAndServe(int port){
                 for(int i = 0 ; i < tmpread; i++){
 
                     int idx = valread + i;
-                    req_buffer[idx] = recv_buffer[i]; 
+
+                    req_buffer[idx] = recv_buffer[i];
+
+                    if(recv_buffer[i] == '\n'){
+
+                        req_buffer[idx + 1] = '\0';
+                        status = ProcessBuffer(ret_buffer, req_buffer);
+                        printf("Recived command : %s", req_buffer);
+                        printf("Processed result : %s\n", ret_buffer);
+                        valwrite = write(client_socket, ret_buffer, strlen(ret_buffer));
+
+                        memset(req_buffer, 0, MAX_REQ_STRLEN);
+                        valread = 0;
+                        break;
+                    } 
 
                 }
 
+                memset(recv_buffer, 0, MAX_REQ_STRLEN);
+                if(valread == 0) continue;
 
                 memset(recv_buffer, 0, MAX_REQ_STRLEN);
                 valread += tmpread;
+
+                
             }
 
             if(failed_read == 1){
