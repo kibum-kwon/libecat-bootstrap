@@ -425,7 +425,7 @@ class SkeletonPanel(QWidget):
             input_field.setText("Error")
 
     def start_robot(self):
-        self.current_speed = 1500000
+        self.current_speed = 10000
         self.speed_label.setText(f'Speed: {self.current_speed}')
         hex_speed = f"0x{self.current_speed:X}" 
         for i in range(4):
