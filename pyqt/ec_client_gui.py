@@ -476,3 +476,5 @@ if __name__ == '__main__':
     app = QApplication(sys.argv)
     ex = SkeletonPanel()
     sys.exit(app.exec_())
+    
+    
