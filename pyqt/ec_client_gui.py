@@ -235,20 +235,6 @@ class SkeletonPanel(QWidget):
 
         self.show()
         
-    def reverse(self):
-    # 후진 속도 설정 (예: -2BB0)
-        reverse_speed = -0x2BB0  # 혹은 원하는 후진 속도로 설정
-        self.change_all_wheel_speeds(reverse_speed)
-
-    def change_all_wheel_speeds(self, delta):
-        self.current_speed += delta
-        self.current_speed = max(0, self.current_speed)  # 속도가 0보다 작지 않도록 보장
-        self.speed_label.setText(f'Speed: {self.current_speed}')
-
-        hex_speed = f"0x{abs(self.current_speed):X}"  # 절대값으로 16진수 변환
-        for i in range(4):  
-            command = f"{i} {self.speed_change_cmd} {hex_speed}"
-            self.send_command(command)
 
 
 # /*********************************angle angle angle angle *****************************************************************/ 
